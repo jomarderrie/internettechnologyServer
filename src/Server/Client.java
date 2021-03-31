@@ -14,7 +14,6 @@ public class Client implements Runnable {
     private OutputStream outputStream;
     private String name;
     private String sender;
-    private boolean sending = false;
     private volatile Client receiver;
     private volatile boolean pinging = false;
     private volatile boolean receiving = false;
@@ -115,10 +114,12 @@ public class Client implements Runnable {
 
     }
 
-    public void quit() {
+    public void quit() throws IOException {
         String[] quitMessage = new String[]{"BCST", " has left chat" + this.name};
         broadCast(quitMessage);
         sendMessageToClient("BYE bye see you soon");
+       this.socket.close();
+       clientsThreads.remove(this);
         index = 3;
     }
 
@@ -131,7 +132,7 @@ public class Client implements Runnable {
     }
 
     /**Download afile
-     * @param messageSplit 
+     * @param messageSplit
      * @throws IOException
      */
     private void startDownloading(String[] messageSplit) throws IOException {
